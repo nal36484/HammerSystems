@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.test.domain.entities.StatusEnum
+import com.example.test.domain.usecases.GetMealListFromLocalUseCase
 import com.example.test.domain.usecases.GetMealListUseCase
 import com.example.test.presentation.menu.formatters.MealFormatter
 import com.example.test.presentation.menu.models.MealInfo
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 
 class MenuViewModel(
     private val getMealListUseCase: GetMealListUseCase,
+    private val getMealListFromLocalUseCase: GetMealListFromLocalUseCase,
     private val formatter: MealFormatter
 ) : ViewModel() {
 
@@ -40,18 +42,26 @@ class MenuViewModel(
             if (mealList.status == StatusEnum.SUCCESS) {
                 val vo = mealList.data?.let { data -> formatter.format(data) }
                 _menu.postValue(vo)
+            } else {
+                val mealFlow = getMealListFromLocalUseCase.execute()
+                mealFlow.collect { list ->
+                    val vo = formatter.format(list)
+                    _menu.postValue(vo)
+                }
             }
         }
     }
 
     class MenuViewModelFactory(
         private val getMealListUseCase: GetMealListUseCase,
+        private val getMealListFromLocalUseCase: GetMealListFromLocalUseCase,
         private val formatter: MealFormatter
     ) : ViewModelProvider.NewInstanceFactory() {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return MenuViewModel(
                 getMealListUseCase,
+                getMealListFromLocalUseCase,
                 formatter
             ) as T
         }

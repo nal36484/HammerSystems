@@ -6,6 +6,6 @@ import com.example.test.domain.repositories.MenuRepository
 
 class GetMealListUseCase(private val repository: MenuRepository) {
     suspend fun execute(): Result<List<MealDomain>> {
-        return repository.getMealList()
+        return repository.getMealListFromNetwork()
     }
 }

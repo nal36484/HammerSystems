@@ -6,9 +6,9 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelsModule = module {
-    viewModel { MenuViewModel(get(), get()) }
+    viewModel { MenuViewModel(get(), get(), get()) }
 
-    single { MenuViewModel.MenuViewModelFactory(get(),get()) }
+    single { MenuViewModel.MenuViewModelFactory(get(),get(), get()) }
 
     single { MealFormatter() }
 }
